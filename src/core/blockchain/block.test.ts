@@ -15,10 +15,11 @@ describe('Block 검증', () => {
         merkleRoot: '0'.repeat(64),
         data: ['Hello Block'],
     }
-    
+
     it('블록생성', () => {
         const data = ['Block #2']
-        newBlock = new Block(genesisBlock, data)
+        // newBlock = new Block(genesisBlock, data)
+        newBlock = Block.generateBlock(genesisBlock, data)
         const newBlock2 = new Block(newBlock, data)
 
         console.log(newBlock)

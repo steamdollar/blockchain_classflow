@@ -2,6 +2,7 @@ declare interface IBlock extends IBlockHeader {
     merkleRoot: string
     hash: string
     data: string[]
+    
 }
 
 declare interface IBlockHeader {

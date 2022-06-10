@@ -41,6 +41,19 @@ export class Block extends BlockHeader implements IBlock {
         return SHA256(values).toString()
     }
 
+    // 블록 생성 작업 증명
+
+    public static generateBlock(_previousBlock: Block, _data : string[]): Block {
+        const generateBlock = new Block (_previousBlock, _data)
+        // 여기 마이닝 관련 코드를 작성하면 된다.
+        const newBlock = Block.findBlock(generateBlock)
+        return generateBlock
+    }
+
+    public static findBlock (_generateBlock : Block) : Block {
+        return _generateBlock
+    }
+
     public static isValidNewBlock(_newBlock:Block, _previouseBlock:Block): Failable <Block, string> {
         // Failable : 에러가 없으면 Block, 있으면 string
         // 1. 이전블럭 height + 1  === new Block의 height ? 
