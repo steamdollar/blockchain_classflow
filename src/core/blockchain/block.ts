@@ -25,18 +25,34 @@ export class Block extends BlockHeader implements IBlock {
     }
 
     public static createBlockHash(_block:Block):string {
-        const values = Object.values(_block).join('')
+        // { data, hash, ...rest} : Block << 이렇게 매개변수에 줘도 된다.
+        // { version, timetstamp, merkleRoot, previoushash, height }
+
+        // let block2:object = {
+        //     version : _block.version,
+        //     timestamp : _block.timestamp,
+        //     height: _block.height,
+        //     previousHash : _block.previousHash,
+        //     merkelRoot : _block.merkleRoot
+        // }
+        const { version, timestamp, merkleRoot, previousHash, height} = _block
+
+        const values: string = `${version}${timestamp}${merkleRoot}${previousHash}${height}`
         return SHA256(values).toString()
     }
 
     public static isValidNewBlock(_newBlock:Block, _previouseBlock:Block): Failable <Block, string> {
         // Failable : 에러가 없으면 Block, 있으면 string
-        // 1. 이전블럭 height + 1  === new BLock의 height ? 
+        // 1. 이전블럭 height + 1  === new Block의 height ? 
         // 2. 이전블럭 해시값 === 현재블럭.이전블럭해시 값 ?
         // 3. _newBlock의 속성들을 가져와 hash 새로 생성 === _newBlock의 hash ? 
         if (_previouseBlock.height + 1 !== _newBlock.height) return { isError : true, error: 'block height is different'}
         if (_previouseBlock.hash !== _newBlock.previousHash) return { isError : true, error : 'hash value doesn match'}
-        if ( Block.createBlockHash(_newBlock) !== _newBlock.hash ) return { isError : true, error : 'hash value is wrong'}
+        if ( Block.createBlockHash(_newBlock) !== _newBlock.hash ) {
+            console.log(Block.createBlockHash(_newBlock))
+            console.log(_newBlock.hash)
+            return { isError : true, error : 'hash value is wrong'}
+        }
         return {isError : false, value: _newBlock}
     }
 }
