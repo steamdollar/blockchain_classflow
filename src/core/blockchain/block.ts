@@ -1,11 +1,14 @@
 import { SHA256 } from 'crypto-js'
 import merkle from 'merkle'
 import { BlockHeader } from './blockHeader'
+import { GENESIS } from "@core/config"
 
 export class Block extends BlockHeader implements IBlock {
     public hash: string
     public merkleRoot: string
     public data: string[]
+    public difficulty : number
+    public nonce : number
 
     constructor(_previousBlock: Block, _data : string[]) {
         // this : { }
@@ -16,7 +19,13 @@ export class Block extends BlockHeader implements IBlock {
         // 여기까지 채운 this를 getMerkleRoot의 인자값으로 준다.
         this.hash = Block.createBlockHash(this)
         // = 지금까지 만든 이 객체를 넘겨준다
+        this.nonce = 0
+        this.difficulty = 1
         this.data = _data
+    }
+
+    public static getGenesis():Block {
+        return GENESIS
     }
 
     public static getMerkleRoot<T>(_data : T[]):string {
@@ -61,11 +70,8 @@ export class Block extends BlockHeader implements IBlock {
         // 3. _newBlock의 속성들을 가져와 hash 새로 생성 === _newBlock의 hash ? 
         if (_previouseBlock.height + 1 !== _newBlock.height) return { isError : true, error: 'block height is different'}
         if (_previouseBlock.hash !== _newBlock.previousHash) return { isError : true, error : 'hash value doesn match'}
-        if ( Block.createBlockHash(_newBlock) !== _newBlock.hash ) {
-            console.log(Block.createBlockHash(_newBlock))
-            console.log(_newBlock.hash)
-            return { isError : true, error : 'hash value is wrong'}
-        }
+        if ( Block.createBlockHash(_newBlock) !== _newBlock.hash ) return { isError : true, error : 'hash value is wrong'}
+
         return {isError : false, value: _newBlock}
     }
 }

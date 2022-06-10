@@ -2,6 +2,8 @@ declare interface IBlock extends IBlockHeader {
     merkleRoot: string
     hash: string
     data: string[]
+    nonce : number
+    difficulty :number
     
 }
 
