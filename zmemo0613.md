@@ -103,3 +103,11 @@ npm run dev:ts index.ts
 
 채굴을 하려면..
 
+server 구현은 index.tx 참조
+
+//
+
+websocket
+
+P2Pserver.. serve/p2p.ts 에 정리해둠..
+
