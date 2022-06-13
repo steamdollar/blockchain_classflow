@@ -11,5 +11,9 @@
       "@core/*": ["src/core/*"],
       "*": ["@types/*"]
     }
+  },
+  "ts-node" : {
+    "files" : true
+    
   }
 }

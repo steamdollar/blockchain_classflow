@@ -83,4 +83,23 @@ hash 를 2진수를 바꾸면 첫 1개의 digit이 0인수를 찾는거..
 
 특정 조건을 만족할때까지 계속 연산을 돌려야 하므로..
 
+/////
+
+네트워크 내에서 이걸 주고 받고 하면서 서버 클라이언트는 수시로 바뀌는데,
+
+여기서 개입하는게 http, websocket
+
+src/core/index.ts
+여기 체인을 가져오고
+
+~/index.ts
+에 서버를 만들어줄거다..
+
+tsconfig.json 에도 ts-node 항목을 추가
+
+npx ts-node index.ts 입력하면 서버가 구동된다.
+
+npm run dev:ts index.ts
+
+채굴을 하려면..
 
