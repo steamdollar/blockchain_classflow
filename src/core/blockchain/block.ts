@@ -1,6 +1,7 @@
 import { SHA256 } from 'crypto-js'
 import merkle from 'merkle'
 import { BlockHeader } from './blockHeader'
+import hexToBinary from 'hex-to-binary'
 import { BLOCK_GENERATION_INTERVAL, DIFFICULTY_ADJUSTMENT_INTERVAL, GENESIS, UNIT } from "@core/config"
 
 export class Block extends BlockHeader implements IBlock {
@@ -30,9 +31,9 @@ export class Block extends BlockHeader implements IBlock {
     }
 
     public static createBlockHash(_block:Block):string {
-        const { version, timestamp, merkleRoot, previousHash, height} = _block
+        const { version, timestamp, merkleRoot, previousHash, height, difficulty, nonce} = _block
 
-        const values: string = `${version}${timestamp}${merkleRoot}${previousHash}${height}`
+        const values: string = `${version}${timestamp}${merkleRoot}${previousHash}${height}${difficulty}${nonce}`
         return SHA256(values).toString()
     }
 
@@ -45,7 +46,21 @@ export class Block extends BlockHeader implements IBlock {
     }
 
     public static findBlock (_generateBlock : Block) : Block {
-        return _generateBlock
+        let hash : string
+        let nonce : number = 0 
+
+        while(true) {
+            nonce ++
+            _generateBlock.nonce = nonce
+            hash = Block.createBlockHash(_generateBlock)
+
+            const binary : string = hexToBinary(hash)
+            const result : Boolean =binary.startsWith('0'.repeat(_generateBlock.difficulty))
+            if( result == true ) {
+                _generateBlock.hash = hash
+                return _generateBlock
+            }
+        }
     }
 
     public static getDifficulty(_newBlock : Block, _adjustmentBlock : Block, _previousBlock : Block) : number {
