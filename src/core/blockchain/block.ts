@@ -55,7 +55,7 @@ export class Block extends BlockHeader implements IBlock {
     public static generateBlock(_previousBlock: Block, _data : string[]): Block {
         const generateBlock = new Block (_previousBlock, _data)
         // 여기 마이닝 관련 코드를 작성하면 된다.
-        const newBlock = Block.findBlock(generateBlock)
+        // const newBlock = Block.findBlock(generateBlock)
         return generateBlock
     }
 
