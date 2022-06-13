@@ -1,7 +1,7 @@
 import { SHA256 } from 'crypto-js'
 import merkle from 'merkle'
 import { BlockHeader } from './blockHeader'
-import { GENESIS } from "@core/config"
+import { BLOCK_GENERATION_INTERVAL, DIFFICULTY_ADJUSTMENT_INTERVAL, GENESIS, UNIT } from "@core/config"
 
 export class Block extends BlockHeader implements IBlock {
     public hash: string
@@ -10,13 +10,13 @@ export class Block extends BlockHeader implements IBlock {
     public difficulty : number
     public nonce : number
 
-    constructor(_previousBlock: Block, _data : string[]) {
+    constructor(_previousBlock: Block, _data : string[], _adjustmentBlock : Block) {
         super(_previousBlock)
         const merkleRoot = Block.getMerkleRoot(_data)
         this.merkleRoot = merkleRoot
         this.hash = Block.createBlockHash(this)
         this.nonce = 0
-        this.difficulty = 1
+        this.difficulty = Block.getDifficulty(this, _adjustmentBlock, _previousBlock)
         this.data = _data
     }
 
@@ -38,15 +38,28 @@ export class Block extends BlockHeader implements IBlock {
 
     // 블록 생성 작업 증명
 
-    public static generateBlock(_previousBlock: Block, _data : string[]): Block {
-        const generateBlock = new Block (_previousBlock, _data)
-        // 여기 마이닝 관련 코드를 작성하면 된다.
-        // const newBlock = Block.findBlock(generateBlock)
-        return generateBlock
+    public static generateBlock(_previousBlock: Block, _data : string[], _adjustmentBlock : Block): Block {
+        const generateBlock = new Block (_previousBlock, _data, _adjustmentBlock)
+        const newBlock = Block.findBlock(generateBlock)
+        return newBlock
     }
 
     public static findBlock (_generateBlock : Block) : Block {
         return _generateBlock
+    }
+
+    public static getDifficulty(_newBlock : Block, _adjustmentBlock : Block, _previousBlock : Block) : number {
+        if(_adjustmentBlock.height === 0 ) return 0
+        if(_newBlock.height < 9 ) return 0
+        if(_newBlock.height < 19) return 1
+        if(_newBlock.height % DIFFICULTY_ADJUSTMENT_INTERVAL !== 0 ) return _previousBlock.difficulty
+        
+        const timeTaken : number = _newBlock.timestamp - _adjustmentBlock.timestamp
+        const timeExpected : number = UNIT * BLOCK_GENERATION_INTERVAL * DIFFICULTY_ADJUSTMENT_INTERVAL // 6000
+        
+        if( timeTaken < timeExpected / 2 ) return _adjustmentBlock.difficulty + 1
+        else if ( timeTaken >= timeExpected * 2 ) return _adjustmentBlock.difficulty - 1
+        else return _adjustmentBlock.difficulty
     }
 
     public static isValidNewBlock(_newBlock:Block, _previouseBlock:Block): Failable <Block, string> {
