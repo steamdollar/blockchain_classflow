@@ -55,7 +55,7 @@ export class Block extends BlockHeader implements IBlock {
             hash = Block.createBlockHash(_generateBlock)
 
             const binary : string = hexToBinary(hash)
-            const result : Boolean =binary.startsWith('0'.repeat(_generateBlock.difficulty))
+            const result : Boolean = binary.startsWith('0'.repeat(_generateBlock.difficulty))
             if( result == true ) {
                 _generateBlock.hash = hash
                 return _generateBlock
