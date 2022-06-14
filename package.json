@@ -35,5 +35,13 @@
     "hex-to-binary": "^1.0.1",
     "merkle": "^0.6.0",
     "ws": "^8.8.0"
-  }
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/steamdollar/blockchain.git"
+  },
+  "bugs": {
+    "url": "https://github.com/steamdollar/blockchain/issues"
+  },
+  "homepage": "https://github.com/steamdollar/blockchain#readme"
 }
