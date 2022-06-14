@@ -4,7 +4,9 @@ import { WebSocket } from 'ws'
 import { Chain } from '@core/blockchain/chain'
 
 enum MessageType {
-    latest_block = 0
+    latest_block = 0,
+    all_block = 1,
+    receivedChain = 2
 }
 
 interface Message {
@@ -53,26 +55,13 @@ export class P2PServer extends Chain{
     connectSocket(socket : WebSocket) {
         this.sockets.push(socket)
         // 연결된 socket을 배열에 추가
-        socket.on('message', (data : string) => {
-            console.log(data) // buffer
-            // console.log(Buffer.from(data).toString()) // buffer > string
-            // const Block : Message = P2PServer.dataParse<Message>(data)
-            const message : Message = P2PServer.dataParse<Message>(data)
-
-            switch (message.type) {
-                case MessageType.latest_block :
-                    console.log(message)
-                    break
-            }
-            const Block : IBlock = message.payload
-            console.log(Block)
-        })
+        this.messageHandler(socket)
         // 연결된 소켓에 대해 메시지 수신에 대한 이벤트 등록
         // 연결된 소켓이 내게 보낸 메시지.. 
 
         const data : Message = {
             type : MessageType.latest_block,
-            payload : this.getLatestBlock()
+            payload : {}
         }
         
         // socket.send('bitcoin is ponzi')
@@ -80,18 +69,60 @@ export class P2PServer extends Chain{
         // 트리거없이 그냥..
         // 얘가 위에 oscket.on보다 먼저 실행되서 메시지 실행 후, 콜백 실행
         // qwui를 매개변수로 받는다.
-        socket.send(JSON.stringify(data))
+        //socket.send(JSON.stringify(data))
         // 상대에게 최신 블럭을  스트링으로 전송
-        const send = this.send(socket)
-        send(data)
+        this.send(socket)(data)
+        // 메시지 전송 > node2의 마지막 블럭 데이터을 받기 위해..
+        // node2는 요청 받은 데이터를 보내줌
     }
-    
+
+    messageHandler (socket : WebSocket) {
+        const callback = (data :string) => {
+            console.log(data) // buffer
+            // console.log(Buffer.from(data).toString()) // buffer > string
+            // const Block : Message = P2PServer.dataParse<Message>(data)
+            const message : Message = P2PServer.dataParse<Message>(data)
+            const send = this.send(socket)
+            switch (message.type) {
+                case MessageType.latest_block : {
+                    const message : Message = {
+                        type : 1,
+                        payload : [this.getLatestBlock()]
+                    }
+                    send(message)
+                    // console.log(message)
+                    break
+                }
+                // 내가 서버일때 클라이언트에게 메시지를 보내는 케이스
+                
+                case MessageType.all_block : {
+                    const message : Message = {
+                        type: MessageType.receivedChain,
+                        payload : this.getChain()
+                    }
+                    // 블럭 검증 코드 실행 이후, 블럭을 체인에 넣을지 말지 결정
+                    send(message)
+                    break
+                }
+
+                case MessageType.receivedChain : {
+                    const receivedChain : IBlock[] = message.payload
+                    console.log(receivedChain)
+                    break
+                }
+                // 내가 클라이언트일 때 서버에서 전체 블럭을 달라고 요청하는 코드
+            }
+        }
+        socket.on('message', callback)
+    }
+
     //
     send(_socket : WebSocket) {
         return (_data : Message) => {
             _socket.send(JSON.stringify(_data))
         }
     }
+ 
     // 이 고차함수를 connectSocket에서 실행
 
 
@@ -100,7 +131,6 @@ export class P2PServer extends Chain{
         // const result = JSON.parse(Buffer.from(_data).toString())
         // if( result === undefined ) return { isError : true, error : 'conversion failed'}
         // return { isError : false, value : result }
-
-        return JSON.parse(Buffer.from(_data).toString())
+            return JSON.parse(Buffer.from(_data).toString())
     }
 }
