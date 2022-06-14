@@ -2,7 +2,7 @@ import { Block } from "@core/blockchain/block"
 import { DIFFICULTY_ADJUSTMENT_INTERVAL } from "@core/config"
 
 export class Chain {
-    public blockchain:Block[]
+    private blockchain:Block[]
 
     constructor() {
         this.blockchain = [Block.getGenesis()]

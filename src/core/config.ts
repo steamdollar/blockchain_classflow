@@ -8,7 +8,7 @@ export const GENESIS: IBlock = {
     merkleRoot: '0'.repeat(64),
     nonce : 0,
     difficulty : 0,
-    data: ['Hello Block'],
+    data: ['Bitcoin is Ponzi'],
 }
 
 // 난이도 측정 블록 수 n개 단위로 난이도 측정
