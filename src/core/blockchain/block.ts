@@ -76,9 +76,14 @@ export class Block extends BlockHeader implements IBlock {
         else if ( timeTaken >= timeExpected * 2 ) return _adjustmentBlock.difficulty - 1
         else return _adjustmentBlock.difficulty
     }
-
+    
     public static isValidNewBlock(_newBlock:Block, _previouseBlock:Block): Failable <Block, string> {
-        if (_previouseBlock.height + 1 !== _newBlock.height) return { isError : true, error: 'block height is different'}
+        if (_previouseBlock.height + 1 !== _newBlock.height) {
+            console.log(_newBlock.height, _previouseBlock.height )
+            console.log(_newBlock)
+            console.log(_previouseBlock)
+            return { isError : true, error: 'block height is different' }
+        }
         if (_previouseBlock.hash !== _newBlock.previousHash) return { isError : true, error : 'hash value doesn match'}
         if ( Block.createBlockHash(_newBlock) !== _newBlock.hash ) return { isError : true, error : 'hash value is wrong'}
 
