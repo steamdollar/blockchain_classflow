@@ -13,9 +13,9 @@ export class P2PServer {
         const server = new WebSocket.Server( { port : 7545 })
         server.on( 'connection', (socket) => {
             console.log( 'websocket connection' )
-            this.sockets.push(socket)
             this.connectSocket(socket)
-            // websocket이 외와 연결될 경우 코드 실행, 콘솔 찍고 sockets 배열에 푸시
+            // websocket이 외와 연결될 경우 실행할 코드
+            // 콘솔 찍고 connectSocket 함수 실행
         })
     }
 
