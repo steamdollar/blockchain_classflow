@@ -1,5 +1,6 @@
 import { BlockChain } from "./src/core/index";
 import { P2PServer } from "./src/serve/p2p";
+import peers from './peer.json'
 import express from 'express'
 
 
@@ -30,6 +31,12 @@ app.post('/mineBlock', (req, res) => {
 app.post('/addToPeer', (req, res) => {
     const { peer } = req.body
     ws.connectToPeer(peer)
+})
+
+app.get('/addPeers', (req,res) => {
+    peers.forEach((peer) => {
+        ws.connectToPeer(peer)
+    })
 })
 
 app.get('/peers', (req, res) => {

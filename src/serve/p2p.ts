@@ -14,8 +14,6 @@ interface Message {
     payload : any,
 }
 
-
-
 export class P2PServer extends Chain{
     
     private sockets : WebSocket[]
