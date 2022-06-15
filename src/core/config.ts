@@ -20,7 +20,7 @@ export const GENESIS  : IBlock = {
     timestamp: 1655218800000,
     difficulty: 0,
     nonce: 0,
-    data: [ 'FUCKING AWESOME GENESIS2' ]
+    data: [ 'FUCKING AWESOME GENESIS' ]
   }
 
 // 난이도 측정 블록 수 n개 단위로 난이도 측정
