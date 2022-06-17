@@ -74,14 +74,16 @@ export class Chain {
         if( latestReceivedBlock.height === 0 ) {
             return { isError : true, error : ' recent block is genesis' }
         }
+
+        if( latestReceivedBlock.previousHash === latestBlock.hash ) {
+            return { isError : true, error : ' one block short' }
+        }
         
         if( latestReceivedBlock.height <= latestBlock.height ) {
             return { isError : true, error : 'my current blockchain is longer than received one or at least same' }
         }
 
-        if( latestReceivedBlock.previousHash === latestBlock.hash ) {
-            return { isError : true, error : ' one block short' }
-        }
+
         // 이상 3개 조건이 체인을 안바꿔도 되는 경우에 대한 것
 
         // 이 아래로 chain을 바꿔주는 코드 작성

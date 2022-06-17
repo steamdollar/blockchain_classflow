@@ -105,10 +105,7 @@ export class P2PServer extends Chain{
         
 
                 case MessageType.all_block : {
-                    const message : Message = {
-                        type: MessageType.receivedChain,
-                        payload : this.getChain()
-                    }
+
                     // 블럭 검증 코드 실행 이후, 블럭을 체인에 넣을지 말지 결정
                     // 내가 가진 체인의 최신 블럭, 받은 블럭을 비교
                     // 내 hash와 상대방 previousHash가 같다면 길이 차이는 1, 상대방 체인 길이가 1 길다.
@@ -116,9 +113,12 @@ export class P2PServer extends Chain{
                     const [ receivedBlock ] = result.payload // this.getLatestBlock()
                     const isValid = this.addToChain(receivedBlock)
                     console.log(isValid)
-                    if (!isValid.isError ) break
+                    if (!isValid.isError) break
                     // chain에 블럭이 추가되었다면 메시지를 따로 보내지 않고 종료
-
+                    const message : Message = {
+                        type: MessageType.receivedChain,
+                        payload : this.getChain()
+                    }
                     send(message)
                     break
                 }
@@ -127,7 +127,7 @@ export class P2PServer extends Chain{
                 case MessageType.receivedChain : {
                     const receivedChain : IBlock[] = result.payload
                     this.handleChainResponse(receivedChain)
-                    // 상대방 체인을 가져와  내 체인과 비교
+                    // 상대방 체인을 가져와 내 체인과 비교
                     // 이 함수는 하단에 작성
                     break
                 }
